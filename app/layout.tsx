@@ -1,0 +1,50 @@
+import type { Metadata } from "next";
+import { Geist } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+import { PostHogProvider } from "@/app/components/posthog-provider";
+import { PostHogPageview } from "@/app/components/posthog-pageview";
+import "@/lib/fontawesome";
+import "./globals.css";
+import { Suspense } from "react";
+
+const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(defaultUrl),
+  title: "Next.js and Supabase Starter Kit",
+  description: "The fastest way to build apps with Next.js and Supabase",
+};
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  display: "swap",
+  subsets: ["latin"],
+});
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.className} antialiased`}>
+        <PostHogProvider>
+          <Suspense>
+            <PostHogPageview />
+          </Suspense>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </PostHogProvider>
+      </body>
+    </html>
+  );
+}
